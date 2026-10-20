@@ -89,7 +89,9 @@ delivery still works). Stripe retries the webhook if email sending fails.
 - [ ] Shipping rate for printed journals (links collect a US shipping address but charge $0 shipping today)
 - [x] Digital delivery built: webhook + signed links + instant thank-you download
 - [ ] Netlify env vars set (see Digital delivery section)
-- [ ] Stripe webhook endpoint created → `https://ceoofyou.netlify.app/api/stripe-webhook` (event: checkout.session.completed)
+- [x] Stripe webhook endpoint created (`ceoofyou-download-delivery` → `https://ceoofyou.netlify.app/api/stripe-webhook`, event: checkout.session.completed)
+- [x] All 4 payment links redirect to `/thank-you/?session_id={CHECKOUT_SESSION_ID}` (on ceoofyou.netlify.app — switch to youaretheceoofyou.com after DNS cutover)
+- [ ] DNS: point youaretheceoofyou.com at Netlify, then update the 4 redirect URLs + set SITE_URL
 - [ ] Resend account + youaretheceoofyou.com verified as sending domain
 - [ ] End-to-end live test purchase + refund
 - [ ] Fillable companion PDF: promised in adult copy but no file exists yet — create it or adjust copy
