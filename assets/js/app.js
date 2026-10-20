@@ -56,6 +56,55 @@
     note.classList.add('flash');
   }
 
+  /* --- Motion polish: scroll-reveal + buy-bar entrance --- */
+  document.documentElement.classList.add('js');
+  var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (motionOK && 'IntersectionObserver' in window) {
+    var selectors = [
+      '.intro', '.results li', '.depts .dept', '.entries li', '.steps li',
+      '.samples .thumb', '.tools .intro', '.plan', '.who li', '.gallery figure',
+      '.toollist li', '.note-band .wrap > *', '.about .portrait', '.about-copy',
+      '.family-copy', '.gift-main', '.faq details', '.outcomes-foot',
+      '.hs-band .wrap > *', '.close > *',
+    ];
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('inview');
+          io.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    var perParent = new WeakMap();
+    document.querySelectorAll(selectors.join(',')).forEach(function (el) {
+      var parent = el.parentElement || document.body;
+      var i = perParent.get(parent) || 0;
+      perParent.set(parent, i + 1);
+      el.classList.add('reveal');
+      el.style.transitionDelay = Math.min(i * 55, 330) + 'ms';
+      io.observe(el);
+    });
+  }
+
+  /* Buy bar appears once the reader is past the hero */
+  var bar = document.querySelector('.buybar');
+  if (bar) {
+    if (!motionOK) {
+      bar.classList.add('bb-show');
+    } else {
+      var reveal = function () {
+        if (window.scrollY > 420) {
+          bar.classList.add('bb-show');
+          window.removeEventListener('scroll', reveal);
+        }
+      };
+      window.addEventListener('scroll', reveal, { passive: true });
+      reveal();
+    }
+  }
+
   /* Lightbox for journal page samples (present on the adult page only) */
   var lb = document.getElementById('lightbox');
   if (lb) {

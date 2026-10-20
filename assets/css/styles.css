@@ -250,3 +250,72 @@ body{padding-bottom:84px}
 .toollist li::before{content:"";position:absolute;left:-2px;top:-2px;width:44px;height:6px;background:var(--accent)}
 .toollist strong{display:block;font-family:'Oswald','Arial Narrow',sans-serif;font-weight:700;text-transform:uppercase;font-size:20px;margin-bottom:6px}
 .toollist span{color:var(--body);font-size:16px}
+
+/* ============================================================
+   MOTION & VISUAL IMPACT PASS — shipped as one commit so it can
+   be reverted cleanly. All entrance motion is gated behind
+   prefers-reduced-motion: no-preference; hovers are subtle.
+   ============================================================ */
+
+/* Scroll-reveal (elements get .reveal from app.js; no-JS users never hide) */
+@media (prefers-reduced-motion: no-preference){
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .65s cubic-bezier(.2,.65,.3,1),transform .65s cubic-bezier(.2,.65,.3,1)}
+  .reveal.inview{opacity:1;transform:none}
+
+  /* Hero entrance */
+  .hero-copy>*{opacity:0;animation:riseIn .7s cubic-bezier(.2,.65,.3,1) forwards}
+  .hero-copy>:nth-child(1){animation-delay:.05s}
+  .hero-copy>:nth-child(2){animation-delay:.14s}
+  .hero-copy>:nth-child(3){animation-delay:.22s}
+  .hero-copy>:nth-child(4){animation-delay:.30s}
+  .hero-copy>:nth-child(5){animation-delay:.38s}
+  .hero-copy>:nth-child(6){animation-delay:.46s}
+  .hero-visual{opacity:0;animation:riseIn .8s cubic-bezier(.2,.65,.3,1) .3s forwards}
+  @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+  /* Step-line motif draws itself */
+  .hero-copy svg polyline{stroke-dasharray:520;stroke-dashoffset:520;animation:drawSteps 1.3s ease-out .55s forwards}
+  .close svg polyline{stroke-dasharray:520;stroke-dashoffset:520}
+  .close .inview svg polyline,.close svg.inview polyline{animation:drawSteps 1.2s ease-out .2s forwards}
+  @keyframes drawSteps{to{stroke-dashoffset:0}}
+
+  /* Buy bar slides up once the reader is past the hero (JS adds bb-show) */
+  html.js .buybar{transform:translateY(110%);transition:transform .4s cubic-bezier(.2,.65,.3,1)}
+  html.js .buybar.bb-show{transform:translateY(0)}
+}
+
+/* Hover micro-interactions (safe for everyone) */
+.buy{transition:background .15s,color .15s,transform .18s ease,box-shadow .18s ease}
+.buy:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(0,0,0,.16)}
+.buy:active{transform:translateY(0);box-shadow:0 4px 10px rgba(0,0,0,.14)}
+
+.results li{transition:transform .25s ease,box-shadow .25s ease}
+.results li::before{transition:width .35s ease}
+.results li:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(0,0,0,.09)}
+.results li:hover::before{width:calc(100% + 4px)}
+
+.plan,.toollist li,.who li{transition:transform .25s ease,box-shadow .25s ease}
+.plan:hover,.toollist li:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(0,0,0,.08)}
+
+.dept{transition:transform .22s ease}
+.dept:hover{transform:translateY(-3px)}
+
+.gallery figure{overflow:hidden}
+.gallery img,.thumb img{transition:transform .5s cubic-bezier(.2,.65,.3,1)}
+.gallery figure:hover img{transform:scale(1.045)}
+.thumb:hover img{transform:scale(1.03)}
+
+.entries li{transition:background .2s ease}
+.entries li:hover{background:rgba(232,116,15,.07)}
+.entries li:hover .num{color:var(--accent)}
+.entries .num{transition:color .2s ease}
+
+/* Lightbox fades in instead of popping */
+.lightbox{display:flex;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s}
+.lightbox.open{opacity:1;visibility:visible;pointer-events:auto}
+.lightbox img{transform:scale(.97);transition:transform .25s ease}
+.lightbox.open img{transform:scale(1)}
+
+/* Editions nav underline grows on hover */
+.editions a{transition:border-color .2s ease,color .2s ease}
+.editions a:hover{border-bottom-color:var(--accent-dark)}
