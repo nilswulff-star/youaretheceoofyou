@@ -1,0 +1,23 @@
+# Netlify configuration — You Are the CEO of You
+# Static site, no build step. Deploys from the repo root.
+
+[build]
+  publish = "."
+
+# Long-cache fingerprint-free assets conservatively; HTML always fresh.
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
