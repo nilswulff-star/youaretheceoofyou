@@ -62,7 +62,11 @@ Decide before launch and update `/thank-you/`.
 
 ## Pre-launch checklist (placeholders still in the pages)
 
-- [ ] Stripe payment links pasted into `assets/js/app.js`
+- [x] Stripe payment links pasted into `assets/js/app.js` (all 4 created Oct 20, 2026; live mode)
+- [ ] Stripe account verification completed (business details + bank) — payments won't process until done
+- [ ] Stripe statement descriptor changed from "ODIN CAPITAL" (Settings → Business → Public details)
+- [ ] Stripe Tax registration (tax auto-collection is ON but needs a TX registration to calculate) — review with CPA
+- [ ] Shipping rate for printed journals (links collect a US shipping address but charge $0 shipping today)
 - [ ] Digital-delivery method decided; `/thank-you/` updated
 - [ ] Support email (appears in gift sections, FAQs, footer, thank-you page)
 - [ ] Refund policy (FAQ + footer link)
