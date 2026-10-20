@@ -52,13 +52,33 @@ One-time setup in the Stripe Dashboard (stripe.com):
    - Optionally enable promotion codes and Apple Pay / Google Pay (on by default)
 3. Paste each Payment Link URL into `PAYMENT_LINKS` in `assets/js/app.js`, push, done.
 
-**Digital delivery note:** Stripe Payment Links take payment but do not deliver
-files. Options, simplest first:
-- Put the download link in the Payment Link's custom confirmation message and on
-  `/thank-you/` (fast to launch; the URL is technically shareable).
-- Use a fulfillment layer for secure, expiring download links (e.g. a small
-  Netlify Function + Stripe webhook, or a digital-delivery service).
-Decide before launch and update `/thank-you/`.
+## Digital delivery (implemented)
+
+Three Netlify Functions in `netlify/functions/` handle fulfillment with
+HMAC-signed, 7-day expiring download links — no database:
+
+| Route | Purpose |
+|---|---|
+| `POST /api/stripe-webhook` | Stripe `checkout.session.completed` → verifies signature, emails the buyer a unique download link (Resend) |
+| `GET /download?t=…` | Validates the signed token and streams the right PDF from `private/pdfs/` (publicly blocked path) |
+| `GET /api/get-download?session_id=…` | Thank-you page exchanges the paid Checkout Session for an instant download link |
+
+The payment links redirect to `/thank-you/?session_id={CHECKOUT_SESSION_ID}`,
+so buyers get the file immediately AND by email. Run tests: `node tests/run-tests.mjs`.
+
+**Environment variables** (Netlify → Site configuration → Environment variables):
+
+| Var | Value |
+|---|---|
+| `DOWNLOAD_SECRET` | Long random string (signs download tokens) |
+| `STRIPE_SECRET_KEY` | Stripe secret (or restricted) key — used only to read Checkout Sessions |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret (`whsec_…`) of the webhook endpoint in Stripe |
+| `RESEND_API_KEY` | From resend.com (verify youaretheceoofyou.com as a sending domain) |
+| `EMAIL_FROM` | e.g. `You Are the CEO of You <downloads@youaretheceoofyou.com>` |
+| `SITE_URL` | Optional; defaults to the request host |
+
+Until `RESEND_API_KEY` is set, the webhook logs and skips email (thank-you-page
+delivery still works). Stripe retries the webhook if email sending fails.
 
 ## Pre-launch checklist (placeholders still in the pages)
 
@@ -67,7 +87,12 @@ Decide before launch and update `/thank-you/`.
 - [ ] Stripe statement descriptor changed from "ODIN CAPITAL" (Settings → Business → Public details)
 - [ ] Stripe Tax registration (tax auto-collection is ON but needs a TX registration to calculate) — review with CPA
 - [ ] Shipping rate for printed journals (links collect a US shipping address but charge $0 shipping today)
-- [ ] Digital-delivery method decided; `/thank-you/` updated
+- [x] Digital delivery built: webhook + signed links + instant thank-you download
+- [ ] Netlify env vars set (see Digital delivery section)
+- [ ] Stripe webhook endpoint created → `https://ceoofyou.netlify.app/api/stripe-webhook` (event: checkout.session.completed)
+- [ ] Resend account + youaretheceoofyou.com verified as sending domain
+- [ ] End-to-end live test purchase + refund
+- [ ] Fillable companion PDF: promised in adult copy but no file exists yet — create it or adjust copy
 - [ ] Support email (appears in gift sections, FAQs, footer, thank-you page)
 - [ ] Refund policy (FAQ + footer link)
 - [ ] Privacy policy page (footer link)
