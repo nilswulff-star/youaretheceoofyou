@@ -94,13 +94,13 @@ delivery still works). Stripe retries the webhook if email sending fails.
 - [ ] DNS: point youaretheceoofyou.com at Netlify, then update the 4 redirect URLs + set SITE_URL
 - [ ] Resend account + youaretheceoofyou.com verified as sending domain
 - [ ] End-to-end live test purchase + refund
-- [ ] Fillable companion PDF: promised in adult copy but no file exists yet — create it or adjust copy
-- [ ] Support email (appears in gift sections, FAQs, footer, thank-you page)
-- [ ] Refund policy (FAQ + footer link)
-- [ ] Privacy policy page (footer link)
+- [x] Fillable companion PDF built (private/pdfs/companion.pdf, 61 form fields) and delivered with adult orders via /download?t=…&f=companion
+- [x] Support email set to support@youaretheceoofyou.com site-wide — **needs a real mailbox/forward** (e.g. Cloudflare/ImprovMX email routing, or Google Workspace) before launch
+- [x] Refund policy page at /refunds/ — DRAFT, Mark must review the terms before launch
+- [x] Privacy policy page at /privacy/ — DRAFT, review before launch
 - [ ] Shipping cost / method / ship date for printed journals (FAQ + plan cards)
-- [ ] Gift option at checkout confirmed (email-the-recipient wording)
-- [ ] Intro video for the "Let me tell you why I wrote this" section (adult page placeholder)
+- [x] Gift wording made honest (forward the download email / give printed copy)
+- [ ] Intro video: the adult page now shows a "why I wrote this" quote band (see the TODO comment in index.html) — swap in Mark's video when it exists
 - [ ] High School edition: confirm pricing (currently shown matching adult: $29.99 / $39.99)
 - [ ] High School edition: cover art + sample page images (currently reuses the adult cover)
 - [ ] Final proofread by Mark

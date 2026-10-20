@@ -33,8 +33,12 @@ function verifyStripeSignature(payload, header, secret) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-function emailHtml({ name, editionName, url, expiresDays }) {
+function emailHtml({ name, editionName, url, companionUrl, expiresDays }) {
   const first = (name || '').trim().split(/\s+/)[0] || 'there';
+  const companionBlock = companionUrl
+    ? `<p style="margin:18px 0 0"><a href="${companionUrl}" style="display:inline-block;background:#ffffff;color:#000000;border:2px solid #000000;text-decoration:none;font-weight:bold;font-size:15px;padding:13px 24px">Download the fillable tools</a></p>
+    <p style="margin:10px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">The companion PDF: Daily CEO Check-In, Seven-Day Habit Tracker and Weekly Board Meeting — type into it and reuse it every week.</p>`
+    : '';
   return `<!doctype html>
 <html><body style="margin:0;padding:0;background:#f4f4f4;font-family:Helvetica,Arial,sans-serif;color:#000">
 <div style="max-width:560px;margin:0 auto;padding:32px 20px">
@@ -44,9 +48,10 @@ function emailHtml({ name, editionName, url, expiresDays }) {
     <p style="margin:0 0 10px;font-size:16px"><strong>${editionName}</strong></p>
     <p style="margin:0 0 26px;color:#3A3A3A;font-size:15px;line-height:1.55">Your download link is below. It works for ${expiresDays} days — save the PDF to your device once it downloads. It prints on standard 8.5&nbsp;&times;&nbsp;11&nbsp;in paper.</p>
     <a href="${url}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:16px 28px">Download your journal</a>
-    <p style="margin:26px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">If the button doesn't work, copy this link into your browser:<br><span style="word-break:break-all">${url}</span></p>
+    ${companionBlock}
+    <p style="margin:26px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">If a button doesn't work, copy this link into your browser:<br><span style="word-break:break-all">${url}</span></p>
   </div>
-  <p style="margin:18px 4px;color:#777;font-size:12px;line-height:1.5">You are the CEO of you. Your next chapter starts with your next decision.<br>Questions about your order? Just reply to this email.</p>
+  <p style="margin:18px 4px;color:#777;font-size:12px;line-height:1.5">You are the CEO of you. Your next chapter starts with your next decision.<br>Questions about your order? Email support@youaretheceoofyou.com or just reply to this email.</p>
 </div>
 </body></html>`;
 }
@@ -93,6 +98,7 @@ export default async (req) => {
   const token = signToken({ sid: session.id, ed: edition, exp: Date.now() + TOKEN_TTL_MS }, dlSecret);
   const origin = process.env.SITE_URL || new URL(req.url).origin;
   const url = `${origin}/download?t=${token}`;
+  const companionUrl = edition === 'adult' ? `${origin}/download?t=${token}&f=companion` : undefined;
   const editionName = EDITION_NAMES[edition];
 
   if (!resendKey) {
@@ -110,8 +116,8 @@ export default async (req) => {
       from,
       to: [email],
       subject: 'Your journal download — You Are the CEO of You',
-      html: emailHtml({ name: session.customer_details?.name, editionName, url, expiresDays: 7 }),
-      text: `Thank you for your order.\n\n${editionName}\n\nDownload your journal (link valid 7 days):\n${url}\n\nQuestions? Just reply to this email.`,
+      html: emailHtml({ name: session.customer_details?.name, editionName, url, companionUrl, expiresDays: 7 }),
+      text: `Thank you for your order.\n\n${editionName}\n\nDownload your journal (link valid 7 days):\n${url}\n${companionUrl ? `\nDownload the fillable companion tools:\n${companionUrl}\n` : ''}\nQuestions? Email support@youaretheceoofyou.com or just reply to this email.`,
     }),
   });
 

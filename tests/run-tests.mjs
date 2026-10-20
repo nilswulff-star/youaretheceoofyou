@@ -97,6 +97,19 @@ await test('download serves HS edition PDF', async () => {
   assert.equal(res.status, 200);
   assert.ok(res.headers.get('content-disposition').includes('High School'));
 });
+await test('download serves companion tools for adult tokens', async () => {
+  const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() + 60000 }, 'test-download-secret');
+  const res = await download(new Request(`https://x.test/download?t=${encodeURIComponent(t)}&f=companion`));
+  assert.equal(res.status, 200);
+  assert.ok(res.headers.get('content-disposition').includes('Companion'));
+  const buf = Buffer.from(await res.arrayBuffer());
+  assert.equal(buf.subarray(0, 5).toString(), '%PDF-');
+});
+await test('companion is not served for HS tokens', async () => {
+  const t = signToken({ sid: 'cs_2', ed: 'hs', exp: Date.now() + 60000 }, 'test-download-secret');
+  const res = await download(new Request(`https://x.test/download?t=${encodeURIComponent(t)}&f=companion`));
+  assert.equal(res.status, 404);
+});
 await test('download rejects expired/garbage tokens', async () => {
   const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() - 1 }, 'test-download-secret');
   assert.equal((await download(new Request(`https://x.test/download?t=${t}`))).status, 410);
@@ -123,6 +136,7 @@ await test('get-download exchanges a paid session for a link', async () => {
     assert.equal(d.ok, true);
     assert.equal(d.edition, 'hs');
     assert.ok(d.url.startsWith('https://ceoofyou.netlify.app/download?t='));
+    assert.equal(d.companionUrl, undefined); // companion ships with the adult edition only
     const token = new URL(d.url).searchParams.get('t');
     assert.equal(verifyToken(token, 'test-download-secret').ed, 'hs');
   } finally { globalThis.fetch = realFetch; }

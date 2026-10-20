@@ -14,6 +14,11 @@ const FILES = {
   hs: { file: 'highschool.pdf', download: 'You Are the CEO of You - High School Edition.pdf' },
 };
 
+// The fillable companion tools ship with the adult edition.
+const EXTRAS = {
+  adult: { companion: { file: 'companion.pdf', download: 'You Are the CEO of You - Fillable Companion Tools.pdf' } },
+};
+
 async function loadPdf(name) {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
@@ -47,17 +52,19 @@ export default async (req) => {
   const secret = process.env.DOWNLOAD_SECRET;
   if (!secret) return page('Not available', 'Downloads are not configured yet. Please contact support.', 500);
 
-  const t = new URL(req.url).searchParams.get('t');
+  const params = new URL(req.url).searchParams;
+  const t = params.get('t');
   const payload = t ? verifyToken(t, secret) : null;
   if (!payload) {
     return page(
       'Link expired',
-      'This download link is invalid or has expired. Links work for 7 days after purchase — reply to your order email and we’ll send you a fresh one.',
+      'This download link is invalid or has expired. Links work for 7 days after purchase — email support@youaretheceoofyou.com and we’ll send you a fresh one.',
       410,
     );
   }
 
-  const entry = FILES[payload.ed];
+  const extra = params.get('f');
+  const entry = extra ? EXTRAS[payload.ed]?.[extra] : FILES[payload.ed];
   if (!entry) return page('Not found', 'We could not match this link to a journal edition. Please contact support.', 404);
 
   const pdf = await loadPdf(entry.file);

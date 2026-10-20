@@ -42,5 +42,6 @@ export default async (req) => {
     editionName: EDITION_NAMES[edition],
     shipped: Boolean(session.shipping_details || session.collected_information?.shipping_details),
     url: `${origin}/download?t=${token}`,
+    companionUrl: edition === 'adult' ? `${origin}/download?t=${token}&f=companion` : undefined,
   });
 };
