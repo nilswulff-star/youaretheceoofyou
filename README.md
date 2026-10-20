@@ -103,6 +103,10 @@ delivery still works). Stripe retries the webhook if email sending fails.
 - [ ] Intro video: the adult page now shows a "why I wrote this" quote band (see the TODO comment in index.html) — swap in Mark's video when it exists
 - [ ] High School edition: confirm pricing (currently shown matching adult: $29.99 / $39.99)
 - [ ] High School edition: cover art + sample page images (currently reuses the adult cover)
+- [ ] GoatCounter analytics: script is live on every page pointing at `ceoofyou.goatcounter.com` — create the free account at goatcounter.com with site code **ceoofyou** to activate (cookieless; privacy policy already reflects it)
+- [ ] Launch-updates signups land in Netlify → Forms ("launch-updates") — turn on email notifications there
+- [x] Free sample: /sample/you-are-the-ceo-of-you-sample.pdf (cover + Mark's note + Entry 1 + commitment + CTA page)
+- [x] QR codes for all 4 payment links → Desktop\YOUARETHECEOOFYOU\marketing\qr (print-ready PNGs)
 - [ ] Final proofread by Mark
 
 ## Brand
