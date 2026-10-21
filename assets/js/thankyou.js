@@ -52,12 +52,13 @@
       var companion = d.companionUrl
         ? '<a class="buy outline" href="' + d.companionUrl + '">Download the fillable tools (PDF)</a>'
         : '';
-      // Companion app ships with the adult edition for now (same gate as the fillable tools).
-      var app = d.companionUrl
-        ? '<a class="buy outline" href="/app/">Open the companion app</a>'
+      // Companion app ships with the adult edition for now. The tokened link
+      // unlocks the app on the buyer's device.
+      var app = d.appUrl
+        ? '<a class="buy outline" href="' + d.appUrl + '">Open the companion app</a>'
         : '';
-      var appFine = d.companionUrl
-        ? '<p class="r-fine">The companion app is your journal on your phone: every entry, the daily check-in, habit tracker, scorecard and weekly board meeting. Open it on your phone and add it to your home screen — your progress saves on your device (early access).</p>'
+      var appFine = d.appUrl
+        ? '<p class="r-fine">The companion app is your journal on your phone: every entry, the daily check-in, habit tracker, scorecard and weekly board meeting. Open it on your phone and add it to your home screen — the button above unlocks it, and your progress saves on your device (early access).</p>'
         : '';
       var shippedNote = d.shipped
         ? '<p class="r-fine">Your printed journal ships to the address you provided — the digital edition above is included with your order.</p>'

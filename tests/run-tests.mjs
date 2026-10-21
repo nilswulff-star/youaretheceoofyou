@@ -165,4 +165,32 @@ await test('get-download rejects unpaid sessions and bad ids', async () => {
   } finally { globalThis.fetch = realFetch; }
 });
 
+// --- app-access (companion app unlock) ---
+const { default: appAccess } = await import('../netlify/functions/app-access.mjs');
+await test('app-access unlocks a valid adult token', async () => {
+  const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() + 1000 }, 'test-download-secret');
+  const res = await appAccess(new Request(`https://x.test/api/app-access?t=${t}`));
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).ok, true);
+});
+await test('app-access accepts an expired (signature-valid) adult token', async () => {
+  const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() - 1000 }, 'test-download-secret');
+  const res = await appAccess(new Request(`https://x.test/api/app-access?t=${t}`));
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).ok, true);
+});
+await test('app-access rejects HS tokens, tampered tokens and garbage', async () => {
+  const hs = signToken({ sid: 'cs_1', ed: 'hs', exp: Date.now() + 1000 }, 'test-download-secret');
+  assert.equal((await appAccess(new Request(`https://x.test/api/app-access?t=${hs}`))).status, 403);
+  const wrongKey = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() + 1000 }, 'other-key');
+  assert.equal((await appAccess(new Request(`https://x.test/api/app-access?t=${wrongKey}`))).status, 403);
+  assert.equal((await appAccess(new Request('https://x.test/api/app-access?t=garbage'))).status, 403);
+  assert.equal((await appAccess(new Request('https://x.test/api/app-access'))).status, 403);
+});
+await test('download still rejects expired tokens (ignoreExp is app-access only)', async () => {
+  const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() - 1000 }, 'test-download-secret');
+  const res = await download(new Request(`https://x.test/download?t=${t}`));
+  assert.ok(res.status === 403 || res.status === 410, `expected 403/410, got ${res.status}`);
+});
+
 console.log(`\n${passed} tests passed${process.exitCode ? ' (with failures)' : ''}`);

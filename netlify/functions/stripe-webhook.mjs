@@ -118,7 +118,8 @@ export default async (req) => {
   const url = `${origin}/download?t=${token}`;
   const companionUrl = edition === 'adult' ? `${origin}/download?t=${token}&f=companion` : undefined;
   // Companion app is the adult edition for now; HS edition app comes later.
-  const appUrl = edition === 'adult' ? `${origin}/app/` : undefined;
+  // The token in the link unlocks the app on the buyer's device.
+  const appUrl = edition === 'adult' ? `${origin}/app/?t=${token}` : undefined;
   const editionName = EDITION_NAMES[edition];
 
   if (!resendKey) {

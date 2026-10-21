@@ -17,7 +17,21 @@
 <link rel="stylesheet" href="/app/styles.css">
 </head>
 <body>
-<div id="app">
+<div id="lock" hidden>
+  <div class="lock-in">
+    <div class="mark" aria-hidden="true">C</div>
+    <p class="eyebrow">Included with every journal</p>
+    <h1>Your journal.<br>On the go.</h1>
+    <p class="muted">The companion app comes with every purchase of <strong>You Are the CEO of You</strong>: all 30 entries, the Daily CEO Check-In, habit tracker, scorecard and weekly board meeting. Your personal unlock link is on your order confirmation page and in your download email &mdash; open it on this device once and you&rsquo;re in.</p>
+    <label for="lock-code">Or paste your unlock link here</label>
+    <input id="lock-code" class="inp" placeholder="https://youaretheceoofyou.com/app/?t=..." autocomplete="off" inputmode="url">
+    <button id="lock-btn" class="btn" type="button">Unlock the app</button>
+    <p id="lock-msg" class="lock-msg" role="status"></p>
+    <a class="lock-buy" href="/#checkout">Don&rsquo;t have the journal yet? Get it &mdash; $29.99</a>
+    <p class="lock-help">Trouble unlocking? Email support@youaretheceoofyou.com and we&rsquo;ll sort it out.</p>
+  </div>
+</div>
+<div id="app" hidden>
   <header class="top wrap">
     <div class="brand">
       <div class="mark" aria-hidden="true">C</div>

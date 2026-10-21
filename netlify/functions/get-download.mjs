@@ -48,6 +48,7 @@ export default async (req) => {
     shipped: Boolean(session.shipping_details || session.collected_information?.shipping_details),
     url: `${origin}/download?t=${token}`,
     companionUrl: edition === 'adult' ? `${origin}/download?t=${token}&f=companion` : undefined,
+    appUrl: edition === 'adult' ? `${origin}/app/?t=${token}` : undefined,
     receipt: {
       orderRef: refSource.slice(-8).toUpperCase(),
       created: typeof session.created === 'number' ? session.created : null,

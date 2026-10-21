@@ -1684,4 +1684,68 @@ document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>swit
 $("#sheetClose").addEventListener("click",closeSheet);
 $("#backdrop").addEventListener("click",closeSheet);
 window.addEventListener("beforeunload", persist);
-switchTab("today");
+
+/* ================= access gate =================
+   The app ships with every adult-edition purchase. Buyers arrive with a
+   signed token (?t=...) from the thank-you page or download email; it is
+   validated once by /api/app-access, then this device stays unlocked. */
+const UNLOCK_KEY="ceoyou-unlocked";
+let memUnlocked=false;
+function isUnlocked(){ try{ if(localStorage.getItem(UNLOCK_KEY)==="1") return true; }catch(e){} return memUnlocked; }
+function setUnlocked(){ memUnlocked=true; try{ localStorage.setItem(UNLOCK_KEY,"1"); }catch(e){} }
+function extractToken(s){
+  const m=String(s||"").match(/[?&]t=([A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+)/);
+  if(m) return m[1];
+  const r=String(s||"").trim();
+  return /^[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+$/.test(r)? r : "";
+}
+function validateToken(t){
+  return fetch("/api/app-access?t="+encodeURIComponent(t))
+    .then(r=>r.json()).catch(()=>({ok:false, error:"network"}));
+}
+function lockMsg(text, good){
+  const m=document.getElementById("lock-msg");
+  if(m){ m.textContent=text||""; m.classList.toggle("ok", !!good); }
+}
+function failText(d){
+  if(d && d.error==="edition") return "That order is for the High School edition — its app is coming soon. Email support with any questions.";
+  if(d && d.error==="network") return "Couldn't reach the server — check your connection and try again.";
+  return "That link didn't check out. Use the link from your download email, or email support@youaretheceoofyou.com.";
+}
+function bootApp(){
+  document.getElementById("lock").hidden=true;
+  document.getElementById("app").hidden=false;
+  switchTab("today");
+}
+function showLock(msg){
+  document.getElementById("app").hidden=true;
+  document.getElementById("lock").hidden=false;
+  if(msg!==undefined) lockMsg(msg);
+}
+(function initGate(){
+  const btn=document.getElementById("lock-btn");
+  btn.addEventListener("click",()=>{
+    const t=extractToken(document.getElementById("lock-code").value);
+    if(!t){ lockMsg("That doesn't look like an unlock link — paste the whole link from your email."); return; }
+    lockMsg("Checking…", true);
+    validateToken(t).then(d=>{
+      if(d && d.ok){ setUnlocked(); lockMsg("Unlocked. Welcome in.", true); setTimeout(bootApp, 450); }
+      else lockMsg(failText(d));
+    });
+  });
+  document.getElementById("lock-code").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); btn.click(); } });
+  if(isUnlocked()){ bootApp(); return; }
+  const urlT=extractToken(location.search);
+  if(urlT){
+    showLock("Checking your link…");
+    validateToken(urlT).then(d=>{
+      if(d && d.ok){
+        setUnlocked();
+        try{ history.replaceState(null,"",location.pathname); }catch(e){}
+        bootApp();
+      } else showLock(failText(d));
+    });
+  } else {
+    showLock();
+  }
+})();

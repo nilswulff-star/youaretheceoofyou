@@ -13,7 +13,7 @@ export function signToken(payload, secret) {
   return `${body}.${sig}`;
 }
 
-export function verifyToken(token, secret) {
+export function verifyToken(token, secret, { ignoreExp = false } = {}) {
   if (typeof token !== 'string' || token.length > 2048) return null;
   const parts = token.split('.');
   if (parts.length !== 2) return null;
@@ -28,7 +28,7 @@ export function verifyToken(token, secret) {
   } catch {
     return null;
   }
-  if (!payload || typeof payload.exp !== 'number' || Date.now() > payload.exp) return null;
+  if (!payload || typeof payload.exp !== 'number' || (!ignoreExp && Date.now() > payload.exp)) return null;
   return payload;
 }
 
