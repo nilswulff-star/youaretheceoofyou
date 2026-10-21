@@ -10,6 +10,7 @@ in two editions (Adult and High School). Static site, no build step.
 | `/` | `index.html` | Adult edition landing + checkout |
 | `/highschool/` | `highschool/index.html` | High School edition landing + checkout |
 | `/thank-you/` | `thank-you/index.html` | Stripe post-payment confirmation page |
+| `/app/` | `app/index.html` (+ `app/styles.css`, `app/app.js`) | Companion app (early access): the full adult journal as an interactive phone web app — 30 entries with type-in practice pages, Daily CEO Check-In, habit tracker, scorecard, weekly board meeting. Saves to the device (localStorage); accounts/sync on Netlify come later. Noindex; the link is given on the thank-you page and in the download email (adult orders). |
 
 Shared assets live in `assets/` (`css/styles.css`, `js/app.js`, `img/`).
 All JS is external (no inline scripts) so Cloudflare-style email obfuscation or
@@ -96,6 +97,7 @@ delivery still works). Stripe retries the webhook if email sending fails.
 - [x] Resend: youaretheceoofyou.com verified as sending domain + API key set (Oct 21, 2026) — buyers now get the receipt email with download links
 - [ ] End-to-end live test purchase + refund
 - [x] Fillable companion PDF built (private/pdfs/companion.pdf, 61 form fields) and delivered with adult orders via /download?t=…&f=companion
+- [x] Companion app v1 (early access) live at /app/ — included with every adult purchase; linked from the thank-you page and the download email; landing page has an app band, plan bullet and FAQ. On-device storage only; Netlify accounts/sync are the next phase. HS edition app deferred (minor-privacy review first), so the HS page and HS emails make no app claims yet.
 - [x] Support email set to support@youaretheceoofyou.com site-wide — **needs a real mailbox/forward** (e.g. Cloudflare/ImprovMX email routing, or Google Workspace) before launch
 - [x] Refund policy page at /refunds/ — DRAFT, Mark must review the terms before launch
 - [x] Privacy policy page at /privacy/ — DRAFT, review before launch
