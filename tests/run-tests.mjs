@@ -127,6 +127,13 @@ await test('get-download exchanges a paid session for a link', async () => {
       id: 'cs_test_ok', payment_status: 'paid',
       payment_link: Object.keys(PLINK_EDITIONS)[2],
       shipping_details: null,
+      payment_intent: 'pi_3TESTrefABCD1234',
+      created: 1760000000,
+      customer_details: { email: 'buyer@example.com', name: 'Test Buyer' },
+      amount_subtotal: 2999,
+      amount_total: 3246,
+      currency: 'usd',
+      total_details: { amount_tax: 247, amount_shipping: 0 },
     }), { status: 200 });
   };
   try {
@@ -139,6 +146,14 @@ await test('get-download exchanges a paid session for a link', async () => {
     assert.equal(d.companionUrl, undefined); // companion ships with the adult edition only
     const token = new URL(d.url).searchParams.get('t');
     assert.equal(verifyToken(token, 'test-download-secret').ed, 'hs');
+    // receipt details for the thank-you page
+    assert.equal(d.receipt.orderRef, 'ABCD1234');
+    assert.equal(d.receipt.email, 'buyer@example.com');
+    assert.equal(d.receipt.amountSubtotal, 2999);
+    assert.equal(d.receipt.amountTax, 247);
+    assert.equal(d.receipt.amountTotal, 3246);
+    assert.equal(d.receipt.currency, 'USD');
+    assert.equal(d.receipt.created, 1760000000);
   } finally { globalThis.fetch = realFetch; }
 });
 await test('get-download rejects unpaid sessions and bad ids', async () => {

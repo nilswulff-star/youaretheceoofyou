@@ -33,8 +33,20 @@ function verifyStripeSignature(payload, header, secret) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-function emailHtml({ name, editionName, url, companionUrl, expiresDays }) {
+function formatAmount(cents, currency) {
+  if (typeof cents !== 'number') return null;
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: (currency || 'usd').toUpperCase() }).format(cents / 100);
+  } catch {
+    return `$${(cents / 100).toFixed(2)}`;
+  }
+}
+
+function emailHtml({ name, editionName, url, companionUrl, expiresDays, total, orderRef }) {
   const first = (name || '').trim().split(/\s+/)[0] || 'there';
+  const receiptLine = total || orderRef
+    ? `<p style="margin:0 0 22px;color:#3A3A3A;font-size:14px;border:1px solid #e5e5e5;border-left:4px solid #E8740F;padding:10px 14px">${total ? `Total paid: <strong style="color:#000">${total}</strong>` : ''}${total && orderRef ? ' &nbsp;·&nbsp; ' : ''}${orderRef ? `Order <strong style="color:#000">#${orderRef}</strong>` : ''}</p>`
+    : '';
   const companionBlock = companionUrl
     ? `<p style="margin:18px 0 0"><a href="${companionUrl}" style="display:inline-block;background:#ffffff;color:#000000;border:2px solid #000000;text-decoration:none;font-weight:bold;font-size:15px;padding:13px 24px">Download the fillable tools</a></p>
     <p style="margin:10px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">The companion PDF: Daily CEO Check-In, Seven-Day Habit Tracker and Weekly Board Meeting — type into it and reuse it every week.</p>`
@@ -45,6 +57,7 @@ function emailHtml({ name, editionName, url, companionUrl, expiresDays }) {
   <div style="background:#ffffff;border-top:6px solid #E8740F;padding:36px 32px">
     <h1 style="margin:0 0 6px;font-size:26px;line-height:1.15;text-transform:uppercase">Your journal is ready.</h1>
     <p style="margin:0 0 22px;color:#3A3A3A;font-size:15px">Thank you for your order, ${first}.</p>
+    ${receiptLine}
     <p style="margin:0 0 10px;font-size:16px"><strong>${editionName}</strong></p>
     <p style="margin:0 0 26px;color:#3A3A3A;font-size:15px;line-height:1.55">Your download link is below. It works for ${expiresDays} days — save the PDF to your device once it downloads. It prints on standard 8.5&nbsp;&times;&nbsp;11&nbsp;in paper.</p>
     <a href="${url}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:16px 28px">Download your journal</a>
@@ -109,15 +122,17 @@ export default async (req) => {
   }
 
   const from = process.env.EMAIL_FROM || 'You Are the CEO of You <downloads@youaretheceoofyou.com>';
+  const total = formatAmount(session.amount_total, session.currency);
+  const orderRef = String(session.payment_intent || session.id || '').slice(-8).toUpperCase() || undefined;
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       from,
       to: [email],
-      subject: 'Your journal download — You Are the CEO of You',
-      html: emailHtml({ name: session.customer_details?.name, editionName, url, companionUrl, expiresDays: 7 }),
-      text: `Thank you for your order.\n\n${editionName}\n\nDownload your journal (link valid 7 days):\n${url}\n${companionUrl ? `\nDownload the fillable companion tools:\n${companionUrl}\n` : ''}\nQuestions? Email support@youaretheceoofyou.com or just reply to this email.`,
+      subject: 'Your receipt + journal download — You Are the CEO of You',
+      html: emailHtml({ name: session.customer_details?.name, editionName, url, companionUrl, expiresDays: 7, total, orderRef }),
+      text: `Thank you for your order.\n\n${editionName}${total ? `\nTotal paid: ${total}` : ''}${orderRef ? `\nOrder #${orderRef}` : ''}\n\nDownload your journal (link valid 7 days):\n${url}\n${companionUrl ? `\nDownload the fillable companion tools:\n${companionUrl}\n` : ''}\nQuestions? Email support@youaretheceoofyou.com or just reply to this email.`,
     }),
   });
 

@@ -36,6 +36,11 @@ export default async (req) => {
   const token = signToken({ sid, ed: edition, exp: Date.now() + TOKEN_TTL_MS }, dlSecret);
   const origin = process.env.SITE_URL || new URL(req.url).origin;
 
+  // Receipt details for the thank-you page. The order reference is derived
+  // from the PaymentIntent id (falls back to the session id) — stable, short,
+  // and matches what support can look up in Stripe.
+  const refSource = String(session.payment_intent || session.id || sid);
+
   return json({
     ok: true,
     edition,
@@ -43,5 +48,16 @@ export default async (req) => {
     shipped: Boolean(session.shipping_details || session.collected_information?.shipping_details),
     url: `${origin}/download?t=${token}`,
     companionUrl: edition === 'adult' ? `${origin}/download?t=${token}&f=companion` : undefined,
+    receipt: {
+      orderRef: refSource.slice(-8).toUpperCase(),
+      created: typeof session.created === 'number' ? session.created : null,
+      email: session.customer_details?.email || null,
+      name: session.customer_details?.name || null,
+      amountSubtotal: typeof session.amount_subtotal === 'number' ? session.amount_subtotal : null,
+      amountTax: session.total_details?.amount_tax ?? 0,
+      amountShipping: session.total_details?.amount_shipping ?? 0,
+      amountTotal: typeof session.amount_total === 'number' ? session.amount_total : null,
+      currency: (session.currency || 'usd').toUpperCase(),
+    },
   });
 };

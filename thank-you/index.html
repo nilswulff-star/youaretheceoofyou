@@ -13,11 +13,41 @@
 <link rel="stylesheet" href="/assets/css/styles.css">
 <style>
 body{padding-bottom:0}
-.ty{min-height:70vh;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:22px;max-width:760px}
+.ty{min-height:70vh;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:22px;max-width:760px;padding-top:56px;padding-bottom:80px}
 .ty h1{font-size:clamp(40px,6vw,72px)}
 .ty p{margin:0;font-size:19px;max-width:54ch}
 .ty .steps-box{border:2px solid var(--ink);padding:26px;display:flex;flex-direction:column;gap:12px}
 .ty .steps-box strong{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;font-size:20px}
+/* --- Receipt card --- */
+.receipt{width:100%;max-width:560px;border:2px solid var(--ink);background:#fff}
+.receipt .r-head{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--ink);color:#fff;padding:15px 22px}
+.receipt .r-head strong{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;font-size:17px;letter-spacing:.03em;font-weight:700}
+.receipt .r-head span{color:var(--accent);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.14em}
+.receipt .r-rows{padding:6px 22px}
+.receipt .r-row{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:12px 0;border-bottom:1px dashed #d9d9d9;font-size:15px}
+.receipt .r-row:last-child{border-bottom:0}
+.receipt .r-row .k{color:var(--body)}
+.receipt .r-row .v{text-align:right;font-weight:600;white-space:nowrap}
+.receipt .r-row.r-break .v{white-space:normal;word-break:break-word}
+.receipt .r-row.r-item{border-top:2px solid var(--ink);margin-top:2px}
+.receipt .r-row.r-item .k{color:var(--ink);font-weight:700;max-width:34ch}
+.receipt .r-total{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:14px 22px 16px;border-top:2px solid var(--ink);font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase}
+.receipt .r-total .v{font-size:28px;font-weight:700}
+.receipt .r-dl{display:flex;flex-direction:column;gap:10px;padding:18px 22px;background:#FBF3EB;border-top:2px solid var(--ink)}
+.receipt .r-dl .buy{text-align:center}
+.receipt .r-fine{padding:14px 22px 0;font-size:13px;line-height:1.55;color:var(--body);max-width:none}
+.receipt .r-fine:last-child{padding-bottom:20px}
+.r-actions{display:flex;gap:12px;align-items:center}
+.r-actions button.buy{appearance:none;cursor:pointer;font-family:inherit}
+@media print{
+  header.top,footer,.r-actions,.ty .muted,#ty-sub,.receipt .r-dl{display:none!important}
+  body{padding:0}
+  .ty{min-height:0;padding:12px 0;gap:14px}
+  .ty h1{font-size:26px}
+  .ty h1::before{display:none}
+  .receipt{border-color:#000;max-width:100%}
+  .receipt .r-head{background:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -32,7 +62,7 @@ body{padding-bottom:0}
 <main>
   <section class="wrap ty">
     <h1 class="display">Thank you. Your order is confirmed.</h1>
-    <p>A receipt is on its way to the email you used at checkout.</p>
+    <p id="ty-sub">A receipt is on its way to the email you used at checkout.</p>
     <div class="steps-box" id="download-area">
       <strong>What happens next</strong>
       <p>Your download link arrives by email within a few minutes (check spam if it&rsquo;s shy). Printed orders ship to the address you provided, with the digital edition included.</p>
