@@ -17,10 +17,9 @@
      section and show a "checkout opens soon" notice instead.
      ============================================================ */
   var PAYMENT_LINKS = {
+    // Digital only — printed editions are not sold.
     'adult-digital': 'https://buy.stripe.com/00w3cva74azn1Sv7fN1B600', // Digital journal — $29.99
-    'adult-print':   'https://buy.stripe.com/aFa5kD6US9vj40DgQn1B601', // Printed journal + digital — $39.99
-    'hs-digital':    'https://buy.stripe.com/6oU9ATgvsePD0OrarZ1B602', // High school edition, digital — $29.99
-    'hs-print':      'https://buy.stripe.com/7sY28r4MKbDr7cP7fN1B603'  // High school edition, printed + digital — $39.99
+    'hs-digital':    'https://buy.stripe.com/6oU9ATgvsePD0OrarZ1B602'  // The High School Journal, digital — $29.99 (page shows Coming Soon until launch)
   };
 
   /* Wire buy buttons */

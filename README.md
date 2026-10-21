@@ -10,7 +10,6 @@ in two editions (Adult and High School). Static site, no build step.
 | `/` | `index.html` | Adult edition landing + checkout |
 | `/highschool/` | `highschool/index.html` | High School edition landing + checkout |
 | `/thank-you/` | `thank-you/index.html` | Stripe post-payment confirmation page |
-| `/app/` | `app/index.html` (+ `app/styles.css`, `app/app.js`) | Companion app (early access): the full adult journal as an interactive phone web app — 30 entries with type-in practice pages, Daily CEO Check-In, habit tracker, scorecard, weekly board meeting. Saves to the device (localStorage); accounts/sync on Netlify come later. Noindex; the link is given on the thank-you page and in the download email (adult orders). |
 
 Shared assets live in `assets/` (`css/styles.css`, `js/app.js`, `img/`).
 All JS is external (no inline scripts) so Cloudflare-style email obfuscation or
@@ -42,11 +41,9 @@ Until a link is set, buttons scroll to the checkout section and show
 
 One-time setup in the Stripe Dashboard (stripe.com):
 
-1. **Products** (Product catalog → Add product):
+1. **Products** (Product catalog → Add product) — DIGITAL ONLY (decided Oct 21, 2026; printed editions dropped):
    - Digital journal — $29.99
-   - Printed journal + digital — $39.99 (+ shipping)
-   - High School digital — $29.99
-   - High School printed + digital — $39.99 (+ shipping)
+   - The High School Journal, digital — $29.99 (page shows Coming Soon until launch)
 2. For each product, create a **Payment Link**:
    - After payment → redirect to `https://youaretheceoofyou.com/thank-you/`
    - Collect shipping address: **on** for printed products only
@@ -88,7 +85,6 @@ delivery still works). Stripe retries the webhook if email sending fails.
 - [ ] Bank payout account added in Stripe (Settings → Business → Bank accounts and scheduling) — funds sit in the Stripe balance until this is done
 - [ ] Stripe statement descriptor changed from "ODIN CAPITAL" (Settings → Business → Public details)
 - [ ] Stripe Tax registration (tax auto-collection is ON but needs a TX registration to calculate) — review with CPA
-- [ ] Shipping rate for printed journals (links collect a US shipping address but charge $0 shipping today)
 - [x] Digital delivery built: webhook + signed links + instant thank-you download
 - [x] Netlify env vars set: DOWNLOAD_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SITE_URL, RESEND_API_KEY
 - [x] Stripe webhook endpoint created (`ceoofyou-download-delivery` → `https://youaretheceoofyou.com/api/stripe-webhook`, event: checkout.session.completed)
@@ -97,19 +93,22 @@ delivery still works). Stripe retries the webhook if email sending fails.
 - [x] Resend: youaretheceoofyou.com verified as sending domain + API key set (Oct 21, 2026) — buyers now get the receipt email with download links
 - [ ] End-to-end live test purchase + refund
 - [x] Fillable companion PDF built (private/pdfs/companion.pdf, 61 form fields) and delivered with adult orders via /download?t=…&f=companion
-- [x] Companion app v1 (early access) live at /app/ — included with every adult purchase; linked from the thank-you page and the download email; landing page has an app band, plan bullet and FAQ. On-device storage only; Netlify accounts/sync are the next phase. HS edition app deferred (minor-privacy review first), so the HS page and HS emails make no app claims yet.
 - [x] Support email set to support@youaretheceoofyou.com site-wide — **needs a real mailbox/forward** (e.g. Cloudflare/ImprovMX email routing, or Google Workspace) before launch
 - [x] Refund policy page at /refunds/ — DRAFT, Mark must review the terms before launch
 - [x] Privacy policy page at /privacy/ — DRAFT, review before launch
-- [ ] Shipping cost / method / ship date for printed journals (FAQ + plan cards)
 - [x] Gift wording made honest (forward the download email / give printed copy)
 - [ ] Intro video: the adult page now shows a "why I wrote this" quote band (see the TODO comment in index.html) — swap in Mark's video when it exists
-- [ ] High School edition: confirm pricing (currently shown matching adult: $29.99 / $39.99)
-- [ ] High School edition: cover art + sample page images (currently reuses the adult cover)
+- [x] High School pricing confirmed: $29.99 digital (printed editions dropped site-wide Oct 21)
+- [x] High School: final cover + real page images from Nils's Oct 21 finalized version (hs-cover.jpg, entries 4/9/12/27)
 - [ ] GoatCounter analytics: script is live on every page pointing at `ceoofyou.goatcounter.com` — create the free account at goatcounter.com with site code **ceoofyou** to activate (cookieless; privacy policy already reflects it)
 - [ ] Launch-updates signups land in Netlify → Forms ("launch-updates") — turn on email notifications there
 - [x] Free sample: /sample/you-are-the-ceo-of-you-sample.pdf (cover + Mark's note + Entry 1 + commitment + CTA page)
-- [x] QR codes for all 4 payment links → Desktop\YOUARETHECEOOFYOU\marketing\qr (print-ready PNGs)
+- [x] QR codes → Desktop\YOUARETHECEOOFYOU\marketing\qr — **discard qr-adult-printed.png and qr-hs-printed.png** (printed editions dropped); don't distribute qr-hs-digital.png until launch
+- [ ] Stripe: deactivate the two printed payment links (adult $39.99, HS $39.99) and pause the HS digital link until launch — pending Nils's OK
+- [ ] HS launch (next week): replace private/pdfs/highschool.pdf with the FINAL 77-page PDF (current file is the old 66-page version), then flip /highschool/ from Coming Soon to live buy buttons
+- [ ] Adult launch: tomorrow (site already live and selling)
+- [ ] Mark's intro video: place prominently on the landing page when Nils provides the file
+- [ ] Netlify Forms: new form `hs-launch` (HS notify list) — enable email notifications alongside `launch-updates`
 - [ ] Final proofread by Mark
 
 ## Brand
