@@ -359,3 +359,15 @@ body{padding-bottom:84px}
 .sig-row .buy{min-height:50px;padding:12px 22px;font-size:16px;border:0;cursor:pointer;font-family:inherit}
 .hp{display:none}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* --- Companion app band --- */
+.app-band{background:var(--soft);border-top:1px solid var(--line)}
+.app-band .wrap{padding-top:88px;padding-bottom:88px;display:flex;flex-wrap:wrap;gap:40px 72px;align-items:center}
+.app-main{flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+.app-main h2::before{content:"";display:block;width:48px;height:5px;background:var(--accent);margin:0 0 22px}
+.app-main p{margin:0;max-width:48ch}
+.app-kicker{margin:0;font-family:'Oswald','Arial Narrow',sans-serif;font-weight:500;text-transform:uppercase;letter-spacing:.04em;font-size:18px;color:var(--accent-dark)}
+.app-feats{flex:1 1 440px;min-width:0;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 28px}
+.app-feats li{border-top:3px solid var(--ink);padding:14px 0 22px}
+.app-feats strong{display:block;font-family:'Oswald','Arial Narrow',sans-serif;font-weight:500;text-transform:uppercase;font-size:21px;line-height:1.2;margin-bottom:4px}
+.app-feats span{color:var(--body);font-size:16px}

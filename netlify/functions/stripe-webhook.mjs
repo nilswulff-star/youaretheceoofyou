@@ -33,23 +33,15 @@ function verifyStripeSignature(payload, header, secret) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-function formatAmount(cents, currency) {
-  if (typeof cents !== 'number') return null;
-  try {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: (currency || 'usd').toUpperCase() }).format(cents / 100);
-  } catch {
-    return `$${(cents / 100).toFixed(2)}`;
-  }
-}
-
-function emailHtml({ name, editionName, url, companionUrl, expiresDays, total, orderRef }) {
+function emailHtml({ name, editionName, url, companionUrl, appUrl, expiresDays }) {
   const first = (name || '').trim().split(/\s+/)[0] || 'there';
-  const receiptLine = total || orderRef
-    ? `<p style="margin:0 0 22px;color:#3A3A3A;font-size:14px;border:1px solid #e5e5e5;border-left:4px solid #E8740F;padding:10px 14px">${total ? `Total paid: <strong style="color:#000">${total}</strong>` : ''}${total && orderRef ? ' &nbsp;·&nbsp; ' : ''}${orderRef ? `Order <strong style="color:#000">#${orderRef}</strong>` : ''}</p>`
-    : '';
   const companionBlock = companionUrl
     ? `<p style="margin:18px 0 0"><a href="${companionUrl}" style="display:inline-block;background:#ffffff;color:#000000;border:2px solid #000000;text-decoration:none;font-weight:bold;font-size:15px;padding:13px 24px">Download the fillable tools</a></p>
     <p style="margin:10px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">The companion PDF: Daily CEO Check-In, Seven-Day Habit Tracker and Weekly Board Meeting — type into it and reuse it every week.</p>`
+    : '';
+  const appBlock = appUrl
+    ? `<p style="margin:18px 0 0"><a href="${appUrl}" style="display:inline-block;background:#E8740F;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;padding:14px 24px">Open the companion app</a></p>
+    <p style="margin:10px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">Your journal on your phone: every entry, the Daily CEO Check-In, habit tracker, scorecard and weekly board meeting. Open the link on your phone and add it to your home screen. Early access — your progress saves on your device.</p>`
     : '';
   return `<!doctype html>
 <html><body style="margin:0;padding:0;background:#f4f4f4;font-family:Helvetica,Arial,sans-serif;color:#000">
@@ -57,11 +49,11 @@ function emailHtml({ name, editionName, url, companionUrl, expiresDays, total, o
   <div style="background:#ffffff;border-top:6px solid #E8740F;padding:36px 32px">
     <h1 style="margin:0 0 6px;font-size:26px;line-height:1.15;text-transform:uppercase">Your journal is ready.</h1>
     <p style="margin:0 0 22px;color:#3A3A3A;font-size:15px">Thank you for your order, ${first}.</p>
-    ${receiptLine}
     <p style="margin:0 0 10px;font-size:16px"><strong>${editionName}</strong></p>
     <p style="margin:0 0 26px;color:#3A3A3A;font-size:15px;line-height:1.55">Your download link is below. It works for ${expiresDays} days — save the PDF to your device once it downloads. It prints on standard 8.5&nbsp;&times;&nbsp;11&nbsp;in paper.</p>
     <a href="${url}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:16px 28px">Download your journal</a>
     ${companionBlock}
+    ${appBlock}
     <p style="margin:26px 0 0;color:#3A3A3A;font-size:13px;line-height:1.5">If a button doesn't work, copy this link into your browser:<br><span style="word-break:break-all">${url}</span></p>
   </div>
   <p style="margin:18px 4px;color:#777;font-size:12px;line-height:1.5">You are the CEO of you. Your next chapter starts with your next decision.<br>Questions about your order? Email support@youaretheceoofyou.com or just reply to this email.</p>
@@ -112,6 +104,8 @@ export default async (req) => {
   const origin = process.env.SITE_URL || new URL(req.url).origin;
   const url = `${origin}/download?t=${token}`;
   const companionUrl = edition === 'adult' ? `${origin}/download?t=${token}&f=companion` : undefined;
+  // Companion app is the adult edition for now; HS edition app comes later.
+  const appUrl = edition === 'adult' ? `${origin}/app/` : undefined;
   const editionName = EDITION_NAMES[edition];
 
   if (!resendKey) {
@@ -122,17 +116,15 @@ export default async (req) => {
   }
 
   const from = process.env.EMAIL_FROM || 'You Are the CEO of You <downloads@youaretheceoofyou.com>';
-  const total = formatAmount(session.amount_total, session.currency);
-  const orderRef = String(session.payment_intent || session.id || '').slice(-8).toUpperCase() || undefined;
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       from,
       to: [email],
-      subject: 'Your receipt + journal download — You Are the CEO of You',
-      html: emailHtml({ name: session.customer_details?.name, editionName, url, companionUrl, expiresDays: 7, total, orderRef }),
-      text: `Thank you for your order.\n\n${editionName}${total ? `\nTotal paid: ${total}` : ''}${orderRef ? `\nOrder #${orderRef}` : ''}\n\nDownload your journal (link valid 7 days):\n${url}\n${companionUrl ? `\nDownload the fillable companion tools:\n${companionUrl}\n` : ''}\nQuestions? Email support@youaretheceoofyou.com or just reply to this email.`,
+      subject: 'Your journal download — You Are the CEO of You',
+      html: emailHtml({ name: session.customer_details?.name, editionName, url, companionUrl, appUrl, expiresDays: 7 }),
+      text: `Thank you for your order.\n\n${editionName}\n\nDownload your journal (link valid 7 days):\n${url}\n${companionUrl ? `\nDownload the fillable companion tools:\n${companionUrl}\n` : ''}${appUrl ? `\nOpen the companion app on your phone (add it to your home screen):\n${appUrl}\n` : ''}\nQuestions? Email support@youaretheceoofyou.com or just reply to this email.`,
     }),
   });
 

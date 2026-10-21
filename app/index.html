@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Companion App — You Are the CEO of You</title>
+<meta name="description" content="The You Are the CEO of You companion app: all 30 entries, the Daily CEO Check-In, habit tracker, company scorecard and weekly board meeting — on your phone.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#E8740F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CEO of You">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Public+Sans:wght@400;600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/app/styles.css">
+</head>
+<body>
+<div id="app">
+  <header class="top wrap">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">C</div>
+      <div class="t">You Are the CEO of You<small>Companion</small></div>
+    </div>
+    <span class="proto">Early access</span>
+  </header>
+  <main id="screens">
+    <section class="screen wrap" id="scr-today" aria-label="Today"></section>
+    <section class="screen wrap" id="scr-journal" aria-label="Journal"></section>
+    <section class="screen wrap" id="scr-habits" aria-label="Habits"></section>
+    <section class="screen wrap" id="scr-board" aria-label="Board"></section>
+    <section class="screen wrap" id="scr-company" aria-label="Company"></section>
+  </main>
+  <nav id="tabbar" aria-label="Main navigation"><div class="row">
+    <button class="tab" id="tab-today" data-tab="today" aria-label="Today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <span>Today</span></button>
+    <button class="tab" id="tab-journal" data-tab="journal" aria-label="Journal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Journal</span></button>
+    <button class="tab" id="tab-habits" data-tab="habits" aria-label="Habits">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      <span>Habits</span></button>
+    <button class="tab" id="tab-board" data-tab="board" aria-label="Board">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12l2 2 4-4"/></svg>
+      <span>Board</span></button>
+    <button class="tab" id="tab-company" data-tab="company" aria-label="Company">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="3" y1="20" x2="21" y2="20"/></svg>
+      <span>Company</span></button>
+  </div></nav>
+</div>
+<div id="backdrop" hidden></div>
+<div id="sheetwrap" class="sheet" role="dialog" aria-modal="true" aria-label="Detail">
+  <div class="sheet-head">
+    <button class="x" id="sheetClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="ttl"><div class="a" id="sheetKicker"></div><div class="b" id="sheetTitle"></div></div>
+  </div>
+  <div class="sheet-body" id="sheetBody"><div id="sheetInner"></div></div>
+</div>
+<div id="toast" role="status">Saved</div>
+<script src="/app/app.js" defer></script>
+<script data-goatcounter="https://ceoofyou.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
