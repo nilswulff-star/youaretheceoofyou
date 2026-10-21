@@ -187,6 +187,19 @@ await test('app-access rejects HS tokens, tampered tokens and garbage', async ()
   assert.equal((await appAccess(new Request('https://x.test/api/app-access?t=garbage'))).status, 403);
   assert.equal((await appAccess(new Request('https://x.test/api/app-access'))).status, 403);
 });
+await test('app-access team code: refuses when unset, matches when set, rejects wrong code', async () => {
+  delete process.env.APP_PREVIEW_CODE;
+  assert.equal((await appAccess(new Request('https://x.test/api/app-access?code=anything'))).status, 403);
+  process.env.APP_PREVIEW_CODE = 'team-demo-code';
+  const ok = await appAccess(new Request('https://x.test/api/app-access?code=team-demo-code'));
+  assert.equal(ok.status, 200);
+  assert.equal((await ok.json()).ok, true);
+  assert.equal((await appAccess(new Request('https://x.test/api/app-access?code=wrong-code'))).status, 403);
+  // a code never unlocks via the token path, and tokens still work alongside it
+  const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() + 1000 }, 'test-download-secret');
+  assert.equal((await appAccess(new Request(`https://x.test/api/app-access?t=${t}`))).status, 200);
+  delete process.env.APP_PREVIEW_CODE;
+});
 await test('download still rejects expired tokens (ignoreExp is app-access only)', async () => {
   const t = signToken({ sid: 'cs_1', ed: 'adult', exp: Date.now() - 1000 }, 'test-download-secret');
   const res = await download(new Request(`https://x.test/download?t=${t}`));

@@ -1699,8 +1699,8 @@ function extractToken(s){
   const r=String(s||"").trim();
   return /^[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+$/.test(r)? r : "";
 }
-function validateToken(t){
-  return fetch("/api/app-access?t="+encodeURIComponent(t))
+function validateAccess(query){
+  return fetch("/api/app-access?"+query)
     .then(r=>r.json()).catch(()=>({ok:false, error:"network"}));
 }
 function lockMsg(text, good){
@@ -1710,6 +1710,7 @@ function lockMsg(text, good){
 function failText(d){
   if(d && d.error==="edition") return "That order is for the High School edition — its app is coming soon. Email support with any questions.";
   if(d && d.error==="network") return "Couldn't reach the server — check your connection and try again.";
+  if(d && d.error==="bad_code") return "That code didn't match. Check it with whoever gave it to you, or use the link from your download email.";
   return "That link didn't check out. Use the link from your download email, or email support@youaretheceoofyou.com.";
 }
 function bootApp(){
@@ -1725,10 +1726,12 @@ function showLock(msg){
 (function initGate(){
   const btn=document.getElementById("lock-btn");
   btn.addEventListener("click",()=>{
-    const t=extractToken(document.getElementById("lock-code").value);
-    if(!t){ lockMsg("That doesn't look like an unlock link — paste the whole link from your email."); return; }
+    const raw=document.getElementById("lock-code").value;
+    const t=extractToken(raw);
+    const code=t? "" : String(raw||"").trim();
+    if(!t && !code){ lockMsg("Paste the unlock link from your email, or enter your access code."); return; }
     lockMsg("Checking…", true);
-    validateToken(t).then(d=>{
+    validateAccess(t? "t="+encodeURIComponent(t) : "code="+encodeURIComponent(code)).then(d=>{
       if(d && d.ok){ setUnlocked(); lockMsg("Unlocked. Welcome in.", true); setTimeout(bootApp, 450); }
       else lockMsg(failText(d));
     });
@@ -1736,9 +1739,11 @@ function showLock(msg){
   document.getElementById("lock-code").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); btn.click(); } });
   if(isUnlocked()){ bootApp(); return; }
   const urlT=extractToken(location.search);
-  if(urlT){
+  let urlC="";
+  try{ urlC=(new URLSearchParams(location.search).get("code")||"").trim(); }catch(e){}
+  if(urlT || urlC){
     showLock("Checking your link…");
-    validateToken(urlT).then(d=>{
+    validateAccess(urlT? "t="+encodeURIComponent(urlT) : "code="+encodeURIComponent(urlC)).then(d=>{
       if(d && d.ok){
         setUnlocked();
         try{ history.replaceState(null,"",location.pathname); }catch(e){}
