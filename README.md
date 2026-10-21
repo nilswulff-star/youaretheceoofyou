@@ -83,15 +83,16 @@ delivery still works). Stripe retries the webhook if email sending fails.
 ## Pre-launch checklist (placeholders still in the pages)
 
 - [x] Stripe payment links pasted into `assets/js/app.js` (all 4 created Oct 20, 2026; live mode)
-- [ ] Stripe account verification completed (business details + bank) — payments won't process until done
+- [x] Stripe account verification completed (Oct 21, 2026)
+- [ ] Bank payout account added in Stripe (Settings → Business → Bank accounts and scheduling) — funds sit in the Stripe balance until this is done
 - [ ] Stripe statement descriptor changed from "ODIN CAPITAL" (Settings → Business → Public details)
 - [ ] Stripe Tax registration (tax auto-collection is ON but needs a TX registration to calculate) — review with CPA
 - [ ] Shipping rate for printed journals (links collect a US shipping address but charge $0 shipping today)
 - [x] Digital delivery built: webhook + signed links + instant thank-you download
-- [ ] Netlify env vars set (see Digital delivery section)
-- [x] Stripe webhook endpoint created (`ceoofyou-download-delivery` → `https://ceoofyou.netlify.app/api/stripe-webhook`, event: checkout.session.completed)
-- [x] All 4 payment links redirect to `/thank-you/?session_id={CHECKOUT_SESSION_ID}` (on ceoofyou.netlify.app — switch to youaretheceoofyou.com after DNS cutover)
-- [ ] DNS: point youaretheceoofyou.com at Netlify, then update the 4 redirect URLs + set SITE_URL
+- [x] Netlify env vars set: DOWNLOAD_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SITE_URL
+- [x] Stripe webhook endpoint created (`ceoofyou-download-delivery` → `https://youaretheceoofyou.com/api/stripe-webhook`, event: checkout.session.completed)
+- [x] All 4 payment links redirect to `https://youaretheceoofyou.com/thank-you/?session_id={CHECKOUT_SESSION_ID}` (updated Oct 21, 2026)
+- [x] DNS cutover complete: youaretheceoofyou.com live on Netlify DNS with HTTPS cert; redirects, webhook URL and SITE_URL all updated (Oct 21, 2026)
 - [ ] Resend account + youaretheceoofyou.com verified as sending domain
 - [ ] End-to-end live test purchase + refund
 - [x] Fillable companion PDF built (private/pdfs/companion.pdf, 61 form fields) and delivered with adult orders via /download?t=…&f=companion
