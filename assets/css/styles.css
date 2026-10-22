@@ -376,3 +376,14 @@ body{padding-bottom:84px}
   .jgrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:10px;margin:0 -24px;padding:0 24px}
   .jgrid figure{flex:0 0 74%;scroll-snap-align:center}
 }
+
+/* ===== Note band: Mark's intro video (text left, video right) ===== */
+.note-band .wrap.nb-grid{max-width:1160px;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,520px);gap:28px 64px;align-items:center}
+.nb-head{grid-column:1;grid-row:1}
+.nb-copy{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:22px;min-width:0}
+.nb-video{grid-column:2;grid-row:1 / span 2;margin:0;min-width:0}
+.nb-video video{width:100%;height:auto;display:block;background:#000;box-shadow:0 26px 52px rgba(0,0,0,.5)}
+.nb-video figcaption{margin-top:12px;font-size:13.5px;color:#BDBDBD}
+@media (max-width:880px){
+  .note-band .wrap.nb-grid{display:flex;flex-direction:column}
+}

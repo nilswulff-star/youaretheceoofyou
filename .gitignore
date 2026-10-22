@@ -1,2 +1,5 @@
 .DS_Store
 node_modules/
+
+# video masters and raw frames stay out of git
+source-assets/
