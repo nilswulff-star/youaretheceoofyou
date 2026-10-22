@@ -80,6 +80,31 @@ await test('webhook ignores other event types', async () => {
   const res = await webhook(webhookReq(p, stripeSigned(p, 'whsec_testsecret')));
   assert.equal(res.status, 200);
 });
+await test('webhook sends buyer email + internal order alert', async () => {
+  process.env.RESEND_API_KEY = 're_test_fake';
+  process.env.ORDER_ALERT_EMAILS = 'a@x.com, b@y.com,c@z.com';
+  const realFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, opts) => {
+    assert.ok(String(url).includes('api.resend.com'));
+    calls.push(JSON.parse(opts.body));
+    return new Response('{"id":"em_1"}', { status: 200 });
+  };
+  try {
+    const res = await webhook(webhookReq(sessionEvent, stripeSigned(sessionEvent, 'whsec_testsecret')));
+    assert.equal(res.status, 200);
+    assert.equal((await res.json()).emailed, true);
+    assert.equal(calls.length, 2); // buyer receipt + team alert
+    assert.deepEqual(calls[0].to, ['buyer@example.com']);
+    assert.deepEqual(calls[1].to, ['a@x.com', 'b@y.com', 'c@z.com']);
+    assert.ok(calls[1].subject.startsWith('New order'));
+    assert.ok(calls[1].text.includes('buyer@example.com'));
+  } finally {
+    globalThis.fetch = realFetch;
+    delete process.env.RESEND_API_KEY;
+    delete process.env.ORDER_ALERT_EMAILS;
+  }
+});
 
 // --- download ---
 await test('download serves the right PDF for a valid token', async () => {

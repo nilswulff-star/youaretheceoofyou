@@ -74,6 +74,7 @@ so buyers get the file immediately AND by email. Run tests: `node tests/run-test
 | `RESEND_API_KEY` | From resend.com (verify youaretheceoofyou.com as a sending domain) |
 | `EMAIL_FROM` | e.g. `You Are the CEO of You <downloads@youaretheceoofyou.com>` |
 | `SITE_URL` | Optional; defaults to the request host |
+| `ORDER_ALERT_EMAILS` | Optional; comma-separated team addresses that get an internal "New order" email on every purchase |
 
 Until `RESEND_API_KEY` is set, the webhook logs and skips email (thank-you-page
 delivery still works). Stripe retries the webhook if email sending fails.

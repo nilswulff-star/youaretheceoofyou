@@ -151,5 +151,35 @@ export default async (req) => {
     return new Response('Email send failed', { status: 500 });
   }
 
+  // Internal "new order" alert to the team (ORDER_ALERT_EMAILS, comma-separated).
+  // Best-effort: never fails the webhook, or Stripe's retry would re-send the
+  // buyer their receipt email.
+  const alertList = (process.env.ORDER_ALERT_EMAILS || '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (alertList.length) {
+    try {
+      const payRef = typeof session.payment_intent === 'string' ? session.payment_intent : '';
+      const alertText = [
+        `Edition: ${editionName}`,
+        total ? `Total paid: ${total}` : null,
+        orderRef ? `Order: #${orderRef}` : null,
+        `Buyer: ${session.customer_details?.name || '—'} <${email}>`,
+        payRef ? `Stripe: https://dashboard.stripe.com/payments/${payRef}` : null,
+      ].filter(Boolean).join('\n');
+      const alertRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from,
+          to: alertList,
+          subject: `New order — ${editionName}${total ? ` (${total})` : ''}`,
+          text: alertText,
+        }),
+      });
+      if (!alertRes.ok) console.error('Order alert email failed', alertRes.status, await alertRes.text());
+    } catch (e) {
+      console.error('Order alert email error', e);
+    }
+  }
+
   return new Response(JSON.stringify({ received: true, emailed: true }), { status: 200 });
 };
